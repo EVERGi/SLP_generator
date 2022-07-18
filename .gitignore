@@ -1,0 +1,7 @@
+data/buildings/
+data/
+
+EAN_VOLUME.7z
+kmeans4.pkl
+train_vvsg.p
+train_prob_vvsg.p
