@@ -1,5 +1,7 @@
 data/buildings/
 data/
+models/
+results/
 
 EAN_VOLUME.7z
 kmeans4.pkl
