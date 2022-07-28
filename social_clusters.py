@@ -39,18 +39,14 @@ input_dir = './data/'
 
 @st.cache
 def load_data():
-    features = pd.read_csv(input_dir+'features.csv', index_col=0)
-    metadata = pd.read_csv('data/EANLIJST_METADATA.csv', index_col=0, sep   = ';')
-    # ADD the functietype column to the features
-    features['function'] = metadata['Patrimonium Functietype']
-    # read more metrics from csv
-    metrics = pd.read_csv('data/ts_metrics.csv', usecols = ['ID', 'mean', 'std'], index_col='ID')
-    # add the metrics to the features
-    features = features.join(metrics)
-    features.isnull().sum()
-    features.dropna(inplace=True)
-    features['ID'] = features.index
-    return features
+    st_p = pd.read_csv(input_dir+'st_p_kproto10.csv', index_col=0)
+    return st_p
+
+@st.cache
+def load_model():
+    with open(model_dir+'kproto10_model.pkl', 'rb') as f:
+        model = pickle.load(f)
+    return model
 
 def band_interval_plot(x, y: np.ndarray, lower: np.ndarray, upper: np.ndarray, conf_percentage: float, sort: bool) -> None:
     r"""Function used to plot the data in `y` and it's confidence interval
@@ -88,5 +84,9 @@ def band_interval_plot(x, y: np.ndarray, lower: np.ndarray, upper: np.ndarray, c
     ax.legend()
     return fig
 if __name__ == "__main__":
-    
+    st.title("Profile Clustering")
+    profiles = load_data()
+    model = load_model()
+    # double-ended slider morning/evening
+    st.select_slider('Use of building in morning/evening:', 0.0, 1.0)    
 
