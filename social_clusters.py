@@ -44,7 +44,7 @@ def load_data():
 
 @st.cache
 def load_model():
-    with open(model_dir+'kproto10_model.pkl', 'rb') as f:
+    with open(model_dir+'kproto10.pkl', 'rb') as f:
         model = pickle.load(f)
     return model
 
@@ -88,5 +88,5 @@ if __name__ == "__main__":
     profiles = load_data()
     model = load_model()
     # double-ended slider morning/evening
-    st.select_slider('Use of building in morning/evening:', 0.0, 1.0)    
+    st.slider('Use of building in morning/evening:', 0.0, 1.0, 0.01)
 
