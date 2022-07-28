@@ -20,10 +20,6 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-import cpadapter
-from cpadapter.utils import train_cal_test_split
-from cpadapter.visualization import conditional_band_interval_plot
-
 input_dir = './data/'
 
 # class Profile():
