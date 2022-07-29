@@ -80,7 +80,16 @@ def band_interval_plot(x, y: np.ndarray, lower: np.ndarray, upper: np.ndarray, c
     ax.legend()
     return fig
 if __name__ == "__main__":
-    st.title("Profile Clustering")
+    title_alignment=
+    """
+    <style>
+    Profile Generator {
+    text-align: center
+    }
+    </style>
+    """
+    st.markdown(title_alignment, unsafe_allow_html=True)
+
     profiles = load_data()
     model = load_model()
     # double-ended slider morning/evening
