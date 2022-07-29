@@ -7,3 +7,6 @@ EAN_VOLUME.7z
 kmeans4.pkl
 train_vvsg.p
 train_prob_vvsg.p
+.DS_Store
+src/utils/__pycache__/__init__.cpython-38.pyc
+src/utils/__pycache__/functions.cpython-38.pyc
