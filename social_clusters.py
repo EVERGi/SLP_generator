@@ -84,5 +84,26 @@ if __name__ == "__main__":
     profiles = load_data()
     model = load_model()
     # double-ended slider morning/evening
-    st.slider('Use of building in morning/evening:', 0.0, 1.0, 0.01)
-
+    evening = st.slider('Use of building in the evening:', 0.0, 1.0, 0.01)
+    if 0 <= evening < 0.25:
+        st.markdown("The building is **_barely_ used** in the evening")
+    elif 0.25 <= evening < 0.5:
+        st.markdown("The building is **_sometimes_ used** in the evening")
+    elif 0.5 <= evening < 0.75:
+        st.markdown("The building is **_often_ used** in the evening")
+    elif 0.75 <= evening <= 1.0:
+        st.markdown("The building is **_mostly_ used** in the evening")
+    # double-ended slider morning/evening
+    weekend = st.slider('Use of building in the weekends:', 0.0, 1.0, 0.01)
+    if 0 <= weekend < 0.25:
+        st.markdown("The building is **_barely_ used** in the weekends")
+    elif 0.25 <= weekend < 0.5:
+        st.markdown("The building is **_sometimes_ used** in the weekends")
+    elif 0.5 <= weekend < 0.75:
+        st.markdown("The building is **_often_ used** in the weekends")
+    elif 0.75 <= weekend <= 1.0:
+        st.markdown("The building is **_mostly_ used** in the weekends")
+    # Enter yearly consumption in float
+    yearly_consumption = st.number_input('Yearly consumption:', min_value=0, max_value=10000, value=0, step=10)
+    # Dropdown list for the type of building
+    building_type = st.selectbox('Type of building:', ['Apartment', 'House', 'Office'])
