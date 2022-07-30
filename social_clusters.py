@@ -113,8 +113,9 @@ if __name__ == "__main__":
     # predict cluster
     kproto = load_model()
     st.write(kproto)
-    st.write([yearly_consumption, weekend, evening, building_type])
-    cluster = kproto.predict([yearly_consumption, weekend, evening, building_type], categorical=[3])
+    row = np.array([yearly_consumption, weekend, evening, building_type])
+    st.write(row)
+    cluster = kproto.predict(row.reshape(-1,1), categorical=[3])
     ts = profiles.loc[str(cluster[0])] * yearly_consumption
     day_p = ts.groupby(ts.index.hour).mean()
     day_p.plot()
