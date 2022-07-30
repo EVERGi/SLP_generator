@@ -40,8 +40,7 @@ def load_data():
 
 @st.cache
 def load_model():
-    with open(model_dir+'kproto10.pkl', 'rb') as f:
-        model = pickle.load(f)
+    model = pickle.load(open(model_dir+'kproto10.pkl',  "rb"))
     return model
 
 @st.cache
@@ -87,7 +86,6 @@ def band_interval_plot(x, y: np.ndarray, lower: np.ndarray, upper: np.ndarray, c
 if __name__ == "__main__":
     st.title("Profile Clustering")
     profiles = load_data()
-    model = load_model()
     # double-ended slider morning/evening
     evening = st.slider('Use of building in the evening:', 0.0, 1.0, 0.01)
     if 0 <= evening < 0.25:
@@ -114,7 +112,8 @@ if __name__ == "__main__":
     # Dropdown list for the type of building
     building_type = st.selectbox('Type of building:', types)
     # predict cluster
-    cluster = model.predict([[yearly_consumption, weekend, evening, building_type]])
+    kproto = load_model()
+    cluster = kproto.predict([[yearly_consumption, weekend, evening, building_type]])
     ts = profiles.loc[str(cluster[0])] * yearly_consumption
     day_p = ts.groupby(ts.index.hour).mean()
     day_p.plot()
