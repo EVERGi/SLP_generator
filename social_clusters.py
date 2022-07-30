@@ -114,4 +114,9 @@ if __name__ == "__main__":
     # Dropdown list for the type of building
     building_type = st.selectbox('Type of building:', types)
     # predict cluster
-    cluster = model.predict([[evening, weekend, yearly_consumption, building_type]])
+    cluster = model.predict([[yearly_consumption, weekend, evening, building_type]])
+    ts = profiles.loc[str(cluster[0])] * yearly_consumption
+    day_p = ts.groupby(ts.index.hour).mean()
+    day_p.plot()
+    plt.title('Average Day Profile', fontsize=18)
+    plt.show()
