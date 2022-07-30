@@ -15,7 +15,7 @@ from src.utils.functions import validation
 random.seed(123)
 model_dir = 'models/'
 scaler_dir = 'scalers/'
-input_dir = './data/'
+input_dir = 'data/'
 
 import streamlit as st
 import plotly.express as px
@@ -35,7 +35,6 @@ import matplotlib.cm as cm
 
 #     self.params = params
 
-@st.cache
 def load_data():
     st_p = pd.read_csv(input_dir+'st_p_kproto10.csv', index_col=0)
     return st_p
@@ -120,7 +119,7 @@ if __name__ == "__main__":
     st.write(np.shape(row.reshape(1,-1)))
     cluster = kproto.predict(row.reshape(1,-1), categorical=[3])
     st.write(cluster[0])
-    st.write(profiles)
+    st.write(profiles.columns)
     ts = profiles.loc[str(cluster[0])] * yearly_consumption
     day_p = ts.groupby(ts.index.hour).mean()
     day_p.plot()
