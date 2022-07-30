@@ -38,7 +38,6 @@ def load_data():
     st_p = pd.read_csv(input_dir+'st_p_kproto10.csv', index_col=0)
     return st_p
 
-@st.cache
 def load_model():
     model = pickle.load(open(model_dir+'kproto10.pkl',  "rb"))
     return model
@@ -113,7 +112,9 @@ if __name__ == "__main__":
     building_type = st.selectbox('Type of building:', types)
     # predict cluster
     kproto = load_model()
-    cluster = kproto.predict([[yearly_consumption, weekend, evening, building_type]])
+    st.write(kproto)
+    st.write([yearly_consumption, weekend, evening, building_type])
+    cluster = kproto.predict([yearly_consumption, weekend, evening, building_type], categorical=[3])
     ts = profiles.loc[str(cluster[0])] * yearly_consumption
     day_p = ts.groupby(ts.index.hour).mean()
     day_p.plot()
