@@ -44,6 +44,11 @@ def load_model():
         model = pickle.load(f)
     return model
 
+@st.cache
+def load_metadata():
+    metadata = pd.read_csv('data/EANLIJST_METADATA.csv', index_col=0, sep   = ';')
+    return metadata
+
 def band_interval_plot(x, y: np.ndarray, lower: np.ndarray, upper: np.ndarray, conf_percentage: float, sort: bool) -> None:
     r"""Function used to plot the data in `y` and it's confidence interval
     This function plots `y`, with a line plot, and the interval defined by the
@@ -80,16 +85,7 @@ def band_interval_plot(x, y: np.ndarray, lower: np.ndarray, upper: np.ndarray, c
     ax.legend()
     return fig
 if __name__ == "__main__":
-    title_alignment=
-    """
-    <style>
-    Profile Generator {
-    text-align: center
-    }
-    </style>
-    """
-    st.markdown(title_alignment, unsafe_allow_html=True)
-
+    st.title("Profile Clustering")
     profiles = load_data()
     model = load_model()
     # double-ended slider morning/evening
@@ -114,5 +110,8 @@ if __name__ == "__main__":
         st.markdown("The building is **_mostly_ used** in the weekends")
     # Enter yearly consumption in float
     yearly_consumption = st.number_input('Yearly consumption:', min_value=0, max_value=10000, value=0, step=10)
+    types = load_metadata()['Patrimonium Functietype'].unique()
     # Dropdown list for the type of building
-    building_type = st.selectbox('Type of building:', ['Apartment', 'House', 'Office'])
+    building_type = st.selectbox('Type of building:', types)
+    # predict cluster
+    cluster = model.predict([[evening, weekend, yearly_consumption, building_type]])
