@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import random
 import pickle
+import joblib
 # K-mean clustering libraries
 from kmodes.kprototypes import KPrototypes
 # import minmax scaler
@@ -13,6 +14,8 @@ from src.utils.functions import validation
 
 random.seed(123)
 model_dir = 'models/'
+scaler_dir = 'scalers/'
+input_dir = './data/'
 
 import streamlit as st
 import plotly.express as px
@@ -20,7 +23,6 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-input_dir = './data/'
 
 # class Profile():
 #     """
@@ -85,6 +87,7 @@ def band_interval_plot(x, y: np.ndarray, lower: np.ndarray, upper: np.ndarray, c
 if __name__ == "__main__":
     st.title("Profile Clustering")
     profiles = load_data()
+    scaler = joblib.load(scaler_dir+'scaler.gz')
     # double-ended slider morning/evening
     evening = st.slider('Use of building in the evening:', 0.0, 1.0, 0.01)
     if 0 <= evening < 0.25:
@@ -114,8 +117,10 @@ if __name__ == "__main__":
     kproto = load_model()
     st.write(kproto)
     row = np.array([yearly_consumption, weekend, evening, building_type])
-    st.write(row)
-    cluster = kproto.predict(row.reshape(-1,1), categorical=[3])
+    st.write(np.shape(row.reshape(1,-1)))
+    cluster = kproto.predict(row.reshape(1,-1), categorical=[3])
+    st.write(cluster[0])
+    st.write(profiles)
     ts = profiles.loc[str(cluster[0])] * yearly_consumption
     day_p = ts.groupby(ts.index.hour).mean()
     day_p.plot()
