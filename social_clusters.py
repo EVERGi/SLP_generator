@@ -115,5 +115,6 @@ if __name__ == "__main__":
     ax.set_xticklabels(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'])
     plt.title('Weekday distribution', fontsize=18, loc='left')
     ax.set_ylabel('kWh', fontsize=18)
+    ax.set_xlabel('Weekday')
     # x axis ticks to show the string names of the weekdays
     st.pyplot(fig)
