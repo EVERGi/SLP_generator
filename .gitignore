@@ -1,6 +1,4 @@
 data/buildings/
-data/
-models/
 results/
 
 EAN_VOLUME.7z
@@ -10,3 +8,6 @@ train_prob_vvsg.p
 .DS_Store
 src/utils/__pycache__/__init__.cpython-38.pyc
 src/utils/__pycache__/functions.cpython-38.pyc
+data/EANLIJST_METADATA.csv
+src/utils/__pycache__/__init__.cpython-310.pyc
+src/utils/__pycache__/functions.cpython-310.pyc
