@@ -58,7 +58,7 @@ if __name__ == "__main__":
     kproto = load_model()
     scaler = joblib.load(scaler_dir+'scaler.gz')
     # double-ended slider morning/evening
-    evening = st.slider('Use of building in the evening:', 0.0, 1.0, 0.01)
+    evening = st.slider('Use of building in the evening:', 0.0, 1.0, 0.8, 0.01)
     if 0 <= evening < 0.25:
         st.markdown("The building is **_barely_ used** in the evening")
     elif 0.25 <= evening < 0.5:
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     elif 0.75 <= evening <= 1.0:
         st.markdown("The building is **_mostly_ used** in the evening")
     # double-ended slider morning/evening
-    weekend = st.slider('Use of building in the weekends:', 0.0, 1.0, 0.01)
+    weekend = st.slider('Use of building in the weekends:', 0.0, 1.0, 0.2, 0.01)
     if 0 <= weekend < 0.25:
         st.markdown("The building is **_barely_ used** in the weekends")
     elif 0.25 <= weekend < 0.5:
