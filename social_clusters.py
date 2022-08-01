@@ -35,8 +35,9 @@ import matplotlib.cm as cm
 
 #     self.params = params
 
+@st.cache
 def load_data():
-    st_p = pd.read_csv(input_dir+'st_p_kproto10.csv', index_col=0)
+    st_p = pd.read_csv(input_dir+'st_p_kproto10.csv', index_col=0, parse_dates=[0])
     return st_p
 
 def load_model():
@@ -48,44 +49,10 @@ def load_metadata():
     metadata = pd.read_csv('data/EANLIJST_METADATA.csv', index_col=0, sep   = ';')
     return metadata
 
-def band_interval_plot(x, y: np.ndarray, lower: np.ndarray, upper: np.ndarray, conf_percentage: float, sort: bool) -> None:
-    r"""Function used to plot the data in `y` and it's confidence interval
-    This function plots `y`, with a line plot, and the interval defined by the
-    `lower` and `upper` bounds, with a band plot.
-    Parameters
-    ----------
-    y: numpy.ndarray
-    Array of observation or predictions we want to plot
-    lower: numpy.ndarray
-    Array of lower bound predictions for the confidence interval
-    upper: numpy.ndarray
-    Array of upper bound predictions for the confidence interval
-    conf_percetage: float
-    The desired confidence level of the predicted confidente interval
-    sort: bool
-    Boolean variable that indicates if the data, and the respective lower
-    and upper bound values should be sorted ascendingly.
-    Returns
-    -------
-    None
-    Notes
-    -----
-    This function must only be used for regression cases
-    """
-    if sort:
-        idx = np.argsort(y)
-        y = y[idx]
-        lower = lower[idx]
-        upper = upper[idx]
-    fig, ax = plt.subplots(figsize=(20, 10))
-    ax.plot(x, y.reshape(-1), label='data')
-    conf = str(conf_percentage*100) + '%'
-    ax.fill_between(x, lower, upper, label=conf, alpha=0.3)
-    ax.legend()
-    return fig
 if __name__ == "__main__":
     st.title("Profile Clustering")
     profiles = load_data()
+    kproto = load_model()
     scaler = joblib.load(scaler_dir+'scaler.gz')
     # double-ended slider morning/evening
     evening = st.slider('Use of building in the evening:', 0.0, 1.0, 0.01)
@@ -108,20 +75,19 @@ if __name__ == "__main__":
     elif 0.75 <= weekend <= 1.0:
         st.markdown("The building is **_mostly_ used** in the weekends")
     # Enter yearly consumption in float
-    yearly_consumption = st.number_input('Yearly consumption:', min_value=0, max_value=10000, value=0, step=10)
+    yearly_consumption = st.number_input('Yearly consumption:', min_value=0, max_value=10000, value=5000, step=10)
     types = load_metadata()['Patrimonium Functietype'].unique()
     # Dropdown list for the type of building
-    building_type = st.selectbox('Type of building:', types)
-    # predict cluster
-    kproto = load_model()
-    st.write(kproto)
+    building_type = st.selectbox('Type of building:', types,  index=1)
+    #st.write(kproto)
     row = np.array([yearly_consumption, weekend, evening, building_type])
-    st.write(np.shape(row.reshape(1,-1)))
+    #st.write(np.shape(row.reshape(1,-1)))
     cluster = kproto.predict(row.reshape(1,-1), categorical=[3])
     st.write(cluster[0])
-    st.write(profiles.columns)
-    ts = profiles.loc[str(cluster[0])] * yearly_consumption
+    #st.write(profiles.columns)
+    ts = profiles[str(cluster[0])] * yearly_consumption
     day_p = ts.groupby(ts.index.hour).mean()
-    day_p.plot()
-    plt.title('Average Day Profile', fontsize=18)
-    plt.show()
+    fig, ax = plt.subplots()
+    day_p.plot(ax = ax)
+    plt.title('Average Day Profile', fontsize=30)
+    st.plotly_chart(fig)
