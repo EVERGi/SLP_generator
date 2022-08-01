@@ -35,6 +35,11 @@ import matplotlib.cm as cm
 @st.cache
 def load_data():
     st_p = pd.read_csv(input_dir+'st_p_kproto10.csv', index_col=0, parse_dates=[0])
+    # drop nan and inf values
+    st_p.dropna(inplace=True)
+    # drop inf values
+    st_p.drop(st_p[st_p.values == np.inf].index, inplace=True)
+    st_p.drop(st_p[st_p.index.duplicated()].index, inplace=True)
     return st_p
 
 def load_model():
