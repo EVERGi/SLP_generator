@@ -17,6 +17,8 @@ model_dir = 'models/'
 scaler_dir = 'scalers/'
 input_dir = 'data/'
 
+types = ['Zwembad', 'Administratief centrum', 'Cultureel centrum','Museum', 'RVT/WZC/revalidatiecentrum','Technische middelbare school', 'Bibliotheek', 'Sporthal','Academie', 'Stadhuis/Gemeentehuis', 'Ontmoetingscentrum','Andere gebouwen', 'Sportcomplex', 'Algemene middelbare school','Ziekenhuis', 'Lagere school', 'Brandweerkazerne', 'Stadion','Werkplaats', 'OCMW Woningen','Buitengewoon lager onderwijs (MPI)', 'Politiegebouw', 'Jeugdhuis','Dienstencentrum/CAW/dagverblijf','Buitengewoon middelbaar onderwijs (BUSO)', 'Kleuterschool','OCMW Administratief centrum', 'Kast', 'Kinderdagverblijf/BKO/IBO','Laadeiland', 'Voetbalveld', 'Kerk', 'Pomp', 'Andere terreinen','Parking', 'Fontein', 'Tennisveld', 'Containerpark', 'Andere','School', 'Straatverlichting', 'Looppiste', 'Park']
+
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
@@ -44,10 +46,11 @@ def load_model():
     model = pickle.load(open(model_dir+'kproto10.pkl',  "rb"))
     return model
 
-@st.cache
+#@st.cache
 def load_metadata():
-    metadata = pd.read_csv('data/EANLIJST_METADATA.csv', index_col=0, sep   = ';')
-    return metadata
+    # read a txt file with the metadata
+    meta = open(input_dir+'types.txt', 'r').read().split(',')
+    return meta
 
 if __name__ == "__main__":
     st.title("Profile Clustering")
@@ -75,11 +78,10 @@ if __name__ == "__main__":
     elif 0.75 <= weekend <= 1.0:
         st.markdown("The building is **_mostly_ used** in the weekends")
     # Enter yearly consumption in float
-    yearly_consumption = st.number_input('Yearly consumption:', min_value=0, max_value=500000, value=130000, step=100)
+    yearly_consumption = st.number_input('Yearly consumption [kWh]:', min_value=0, max_value=500000, value=130000, step=100)
     # scale yearly consumption using minmax scaler
     scaled_consumption = scaler.transform([[yearly_consumption]])[0][0]
     #st.write(scaled_consumption)
-    types = load_metadata()['Patrimonium Functietype'].unique()
     # Dropdown list for the type of building
     building_type = st.selectbox('Type of building:', types,  index=1)
     #st.write(kproto)
@@ -88,7 +90,7 @@ if __name__ == "__main__":
     cluster = kproto.predict(row.reshape(1,-1), categorical=[3])
     #st.write(row)
     # markdown title
-    st.markdown("## Cluster: " + str(cluster[0]))
+    st.markdown("## Predicted cluster: " + str(cluster[0]))
     #st.write(profiles.columns)
     ts = profiles[str(cluster[0])] * yearly_consumption
     day_p = ts.groupby(ts.index.hour).mean()
@@ -104,7 +106,11 @@ if __name__ == "__main__":
     # y axis label in kWh
     ax.set_ylabel('kWh', fontsize=15)
     st.pyplot(fig)
-    week_dist = ts.groupby(ts.index.weekday).mean()
+    week_dist = ts.groupby(ts.index.weekday).sum() 
+    # divide by number of weeks in ts
+    week_dist = week_dist / len(ts.resample('W').count())
+    #st.write(week_dist)
+    #st.write(len(ts.resample('W').count()))
     fig, ax = plt.subplots()
     # set size
     fig.set_size_inches(10, 5)
