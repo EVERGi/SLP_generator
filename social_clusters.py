@@ -2,14 +2,12 @@ import os
 import glob
 import pandas as pd
 import numpy as np
-import random
 import pickle
 import joblib
 # K-mean clustering libraries
 from kmodes.kprototypes import KPrototypes
 # import minmax scaler
 from sklearn.preprocessing import MinMaxScaler
-from tqdm import tqdm
 from src.utils.functions import validation
 
 random.seed(123)
@@ -20,8 +18,6 @@ input_dir = 'data/'
 types = ['Zwembad', 'Administratief centrum', 'Cultureel centrum','Museum', 'RVT/WZC/revalidatiecentrum','Technische middelbare school', 'Bibliotheek', 'Sporthal','Academie', 'Stadhuis/Gemeentehuis', 'Ontmoetingscentrum','Andere gebouwen', 'Sportcomplex', 'Algemene middelbare school','Ziekenhuis', 'Lagere school', 'Brandweerkazerne', 'Stadion','Werkplaats', 'OCMW Woningen','Buitengewoon lager onderwijs (MPI)', 'Politiegebouw', 'Jeugdhuis','Dienstencentrum/CAW/dagverblijf','Buitengewoon middelbaar onderwijs (BUSO)', 'Kleuterschool','OCMW Administratief centrum', 'Kast', 'Kinderdagverblijf/BKO/IBO','Laadeiland', 'Voetbalveld', 'Kerk', 'Pomp', 'Andere terreinen','Parking', 'Fontein', 'Tennisveld', 'Containerpark', 'Andere','School', 'Straatverlichting', 'Looppiste', 'Park']
 
 import streamlit as st
-import plotly.express as px
-import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
