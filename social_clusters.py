@@ -75,19 +75,44 @@ if __name__ == "__main__":
     elif 0.75 <= weekend <= 1.0:
         st.markdown("The building is **_mostly_ used** in the weekends")
     # Enter yearly consumption in float
-    yearly_consumption = st.number_input('Yearly consumption:', min_value=0, max_value=10000, value=5000, step=10)
+    yearly_consumption = st.number_input('Yearly consumption:', min_value=0, max_value=500000, value=130000, step=100)
+    # scale yearly consumption using minmax scaler
+    scaled_consumption = scaler.transform([[yearly_consumption]])[0][0]
+    #st.write(scaled_consumption)
     types = load_metadata()['Patrimonium Functietype'].unique()
     # Dropdown list for the type of building
     building_type = st.selectbox('Type of building:', types,  index=1)
     #st.write(kproto)
-    row = np.array([yearly_consumption, weekend, evening, building_type])
+    row = np.array([scaled_consumption, weekend, evening, building_type])
     #st.write(np.shape(row.reshape(1,-1)))
     cluster = kproto.predict(row.reshape(1,-1), categorical=[3])
-    st.write(cluster[0])
+    #st.write(row)
+    # markdown title
+    st.markdown("## Cluster: " + str(cluster[0]))
     #st.write(profiles.columns)
     ts = profiles[str(cluster[0])] * yearly_consumption
     day_p = ts.groupby(ts.index.hour).mean()
+    # set ggplot style in matplotlib
+    plt.style.use('ggplot')
     fig, ax = plt.subplots()
+    fig.set_size_inches(10, 5)
     day_p.plot(ax = ax)
-    plt.title('Average Day Profile', fontsize=30)
-    st.plotly_chart(fig)
+    ax.set_xlabel('Hour')
+    # grid on
+    ax.grid(True)
+    plt.title('Average Day Profile', fontsize=18, loc='left')
+    # y axis label in kWh
+    ax.set_ylabel('kWh', fontsize=15)
+    st.pyplot(fig)
+    week_dist = ts.groupby(ts.index.weekday).mean()
+    fig, ax = plt.subplots()
+    # set size
+    fig.set_size_inches(10, 5)
+    # bar chart for the weekdays
+    week_dist.plot(ax = ax, kind='bar')
+    # set x tick labels as weekday names
+    ax.set_xticklabels(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'])
+    plt.title('Weekday distribution', fontsize=18, loc='left')
+    ax.set_ylabel('kWh', fontsize=18)
+    # x axis ticks to show the string names of the weekdays
+    st.pyplot(fig)
