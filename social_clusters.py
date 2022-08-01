@@ -10,7 +10,6 @@ from kmodes.kprototypes import KPrototypes
 from sklearn.preprocessing import MinMaxScaler
 from src.utils.functions import validation
 
-random.seed(123)
 model_dir = 'models/'
 scaler_dir = 'scalers/'
 input_dir = 'data/'
