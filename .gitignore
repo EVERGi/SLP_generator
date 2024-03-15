@@ -2,6 +2,7 @@ data/buildings/
 results/
 data/
 models/
+notebooks/
 
 EAN_VOLUME.7z
 kmeans4.pkl
