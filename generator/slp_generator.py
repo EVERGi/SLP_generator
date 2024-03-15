@@ -52,7 +52,23 @@ cl_F = ["OCMW Woningen"]
 
 
 class Generator(Tool):
-    # Map each type to its corresponding cluster name for quick lookup
+    """
+    A class that represents a generator.
+
+    Attributes:
+        data_path (str): The path to the data.
+        scaler (MinMaxScaler): The scaler object for scaling values.
+
+    Methods:
+        __init__(self, data_path): Initializes the Generator object.
+        configure(self): Executes multiple functionalities before the main tool.
+        get_cluster_by_type(self, building_type): Gets the cluster of a building type using expert knowledge.
+        load_model(self, name): Loads a model from a pickle file for clustering categorical and numerical data.
+        adjust_day(self, year, month, day): Adjusts the day for February 29 dates in non-leap years.
+        load_data(self, file): Loads data from a CSV file.
+        get_profile(self, scaled_cons, type, evening=None, weekend=None): Gets the temperature profile and changes its format.
+    """
+
     type_to_cluster_map = {
         **{t: "A" for t in cl_A},
         **{t: "B" for t in cl_B},
@@ -74,39 +90,60 @@ class Generator(Tool):
 
     def __init__(self, data_path):
         """
-        Generator constructor (mainly from Tool class)
+        Initializes the Generator object.
+
+        Args:
+            data_path (str): The path to the data.
         """
         self.data_path = data_path
-        # Set min and max values for the scaler
         self.scaler = MinMaxScaler(feature_range=(0, 1))
         self.scaler.fit([[0.0], [7830212.5]])
 
     def configure(self):
         """
-        Multiple functionnalities to execute before the main tool
+        Executes multiple functionalities before the main tool.
         """
         # Load data
-        
         self.kris_profiles = self.load_data("Kris_profiles_reviewed")
         self.k_proto_profiles = self.load_data("st_p_kproto10")
         self.kproto = self.load_model("kproto10")
 
     def get_cluster_by_type(self, building_type):
         """
-        Function to get the cluster of a building type using expert knowledge
+        Gets the cluster of a building type using expert knowledge.
+
+        Args:
+            building_type (str): The building type.
+
+        Returns:
+            str: The cluster of the building type.
         """
         return self.type_to_cluster_map.get(building_type)
 
     def load_model(self, name):
         """
-        Load model k-prototypes from pickle file for clustering categorical and numerical data
+        Loads a model from a pickle file for clustering categorical and numerical data.
+
+        Args:
+            name (str): The name of the model.
+
+        Returns:
+            object: The loaded model.
         """
         model = pickle.load(open(f"{self.static_data_path}/{name}.pkl", "rb"))
         return model
 
     def adjust_day(self, year, month, day):
         """
-        Adjust the day for February 29 dates in non-leap years
+        Adjusts the day for February 29 dates in non-leap years.
+
+        Args:
+            year (int): The year.
+            month (int): The month.
+            day (int): The day.
+
+        Returns:
+            int: The adjusted day.
         """
         if (
             month == 2
@@ -118,7 +155,13 @@ class Generator(Tool):
 
     def load_data(self, file):
         """
-        Load data from csv file
+        Loads data from a CSV file.
+
+        Args:
+            file (str): The name of the CSV file.
+
+        Returns:
+            pd.DataFrame: The loaded data.
         """
         st_p = pd.read_csv(
             f"{self.static_data_path}/{file}.csv", index_col=0, parse_dates=[0]
@@ -132,9 +175,17 @@ class Generator(Tool):
 
     def get_profile(self, scaled_cons, type, evening=None, weekend=None):
         """
-        Get the csv with temperature profile and change its format
+        Gets the temperature profile and changes its format.
+
+        Args:
+            scaled_cons (float): The scaled consumption.
+            type (str): The building type.
+            evening (float, optional): The evening value. Defaults to None.
+            weekend (float, optional): The weekend value. Defaults to None.
+
+        Returns:
+            pd.DataFrame: The temperature profile in the desired format.
         """
-        # ?? @evgenii
         if evening is not None:
             row = np.array([scaled_cons, weekend, evening, type])
             cluster = self.kproto.predict(row.reshape(1, -1), categorical=[3])[0]
