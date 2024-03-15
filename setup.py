@@ -4,11 +4,11 @@ setup(
     name='slp_generator',
     version='0.1.0',
     author='evgeny_genov',
-    author_email='your-email@example.com',
+    author_email='eugengenovl@gmail.com',
     description='A package for generating synthetic load profiles',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/your-github-username/slp_generator',
+    url='https://github.com/ujohn33/SLP_generator',
     packages=find_packages(),
     classifiers=[
         'Development Status :: 3 - Alpha',

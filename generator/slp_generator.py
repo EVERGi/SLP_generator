@@ -72,12 +72,11 @@ class Generator(Tool):
         **{t: "F" for t in cl_F},
     }
 
-    def __init__(self, config, node, **kwargs):
+    def __init__(self, data_path):
         """
         Generator constructor (mainly from Tool class)
         """
-        super().__init__(config, node, **kwargs)
-
+        self.data_path = data_path
         # Set min and max values for the scaler
         self.scaler = MinMaxScaler(feature_range=(0, 1))
         self.scaler.fit([[0.0], [7830212.5]])
@@ -165,55 +164,5 @@ class Generator(Tool):
         if self.timestep == 1:
             df = df.resample("1h").mean()
         df.index = df.index.strftime("%d/%m/%Y %H:%M:%S")
-
         return df
 
-    def generate(self):
-        """
-        Main function of the tool
-        """
-        # Get normalized profile and scale it
-        new_cons = self.config["nodes"][self.node]["load"]["yearly_consumption"]
-        type_cons = self.config["nodes"][self.node]["load"]["type"]
-        # if self.config["nodes"][self.node]["load"]["evening"] does not exist, it will be None
-        # if it exists, it will be the value from the config
-        evening = self.config["nodes"][self.node]["load"].get("evening")
-        weekend = self.config["nodes"][self.node]["load"].get("weekend")
-        # if one of the values is None, then both will be None
-        if evening is None or weekend is None:
-            evening = None
-            weekend = None
-        scaled_consumption = self.scaler.transform([[new_cons]])[0][0]
-        base_load = self.get_profile(scaled_consumption, type_cons, evening, weekend)
-        new_load = base_load * new_cons
-
-        # Change name of load
-        new_load = new_load.rename(
-            columns={"Power (kW)": "Customer_" + str(self.node) + "_electric"}
-        )
-
-        # Save results
-        name = self.intermediate_path + "/Consumer_" + str(self.node) + ".csv"
-        self.results.append({"path": name, "res": new_load})
-
-        # Debug message
-        if self.debug:
-            print("\n", "Load profiles have been configured.", "\n")
-
-    def add_to_config(self, config):
-        """
-        Add LOADs to config file
-        """
-        # Add load
-        load = {"name": "Consumer_" + str(self.node), "node_number": str(self.node)}
-        config["loads"].append(load)
-
-        # Add environment
-        config["environments"].append(
-            [
-                "Consumer_" + str(self.node) + "_electric",
-                "Consumer_" + str(self.node) + ".csv",
-            ]
-        )
-
-        return config
