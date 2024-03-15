@@ -7,6 +7,7 @@ Created on Fri May 15 2024
 import pandas as pd
 import numpy as np
 import pickle
+from kmodes.kprototypes import KPrototypes
 from sklearn.preprocessing import MinMaxScaler
 
 from .tool import Tool
