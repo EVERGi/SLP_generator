@@ -8,7 +8,7 @@ setup(
     description='A package for generating synthetic load profiles',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/ujohn33/SLP_generator',
+    url='https://github.com/EVERGi/SLP_generator',
     packages=find_packages(),
     classifiers=[
         'Development Status :: 3 - Alpha',
